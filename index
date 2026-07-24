@@ -1,0 +1,74 @@
+# What Should I Read Next?
+
+A single-file, dependency-free reading tracker and recommendation tool. It keeps a personal reading ledger (title, author, genre, status, dates, rating, notes, favorite/disliked qualities), shows a dashboard of reading habits, and generates a "next book" recommendation that is grounded in your actual reading history and verified with a live web search — never invented titles or stats.
+
+**Live demo:** open `index.html` in the Claude.ai Artifacts environment (see "Running this project" below for why it's environment-specific).
+
+## Features
+
+- **Add / edit / delete books** with title, author, genre, status (Want to Read, Currently Reading, Finished, Paused, Abandoned), start/finish dates, 1–5 star rating, notes, and favorite/disliked qualities.
+- **Filterable shelf view** — by status, genre, author, and minimum rating.
+- **Dashboard** — books finished, currently reading, average rating, top genre, a most-read-genres bar chart, and a recently-completed list.
+- **Recommendation engine** — a short preference form (mood, genre, length, difficulty, fiction/nonfiction, familiar vs. different, available time) feeds a prompt that:
+  1. Summarizes the reader's finished/abandoned books, ratings, and noted likes/dislikes.
+  2. Calls the Claude API with the `web_search` tool enabled so every recommended title, author, page count, publication year, and series status is checked against a real, current source rather than recalled from the model's training data.
+  3. Returns one ranked **Best Next Pick** plus up to three alternatives, each with a spoiler-free description, a fit rationale, similarities to books the reader enjoyed, possible downsides, and source links.
+- **One-click "Add to Want to Read"** on any recommendation.
+- **Recommendation history** — every run is logged with the preferences used, the books suggested, the best match, and whether each suggestion was added or dismissed.
+- **Persistent storage** — the shelf and recommendation history survive reloads.
+- Empty, loading, success, and error states throughout (empty shelf, empty history, search-in-progress spinner, and a retry-able error panel if the API call or JSON parsing fails).
+- Responsive, accessible layout (keyboard-focus styles, semantic form labels, `prefers-reduced-motion` support) down to mobile widths.
+
+## Design
+
+A "library card catalog" aesthetic: parchment background, hairline rules, a navy/brass/burgundy palette, `Fraunces` for display type, `Inter` for UI text, and `IBM Plex Mono` for data labels — including a small generated "shelf mark" per book, styled after a library call number.
+
+## Project structure
+
+```
+index.html   – the entire application (markup, styles, and JavaScript in one file)
+README.md    – this file
+```
+
+There is intentionally no build step, framework, or bundler — it's a static file you can open directly.
+
+## Running this project
+
+This app was built to run inside **Claude.ai's Artifacts environment**, which provides two things a plain static host doesn't:
+
+1. **`window.storage`** — a simple key-value persistence API used here to save the reading list and recommendation history between sessions.
+2. **An authenticated proxy at `https://api.anthropic.com/v1/messages`** — inside Claude.ai, artifact code can call this endpoint without supplying an API key; the platform handles authentication.
+
+If you deploy `index.html` outside of Claude.ai (e.g., as a standalone GitHub Pages site), you'll need to replace both of those integration points:
+
+- Swap `window.storage` calls for `localStorage`, IndexedDB, or a small backend of your choice (see the `loadBooks`, `saveBooks`, `loadHistory`, `saveHistory` functions — they're isolated and easy to re-point).
+- Add your own Anthropic API key and route the request through a small server-side proxy (never ship an API key in client-side JavaScript). Update the `fetch` call inside `runRecommendation()` accordingly.
+
+Everything else — the UI, filtering, dashboard math, and form logic — is plain HTML/CSS/JS and will run anywhere.
+
+## Data model
+
+```js
+// Book
+{
+  id, title, author, genre, status,       // status: one of the 5 reading statuses
+  dateStarted, dateFinished,              // ISO date strings, optional
+  rating,                                  // 0–5
+  favoriteQualities: [string],
+  dislikedQualities: [string],
+  notes
+}
+
+// Recommendation history entry
+{
+  timestamp, date,
+  preferences: { mood, genre, length, difficulty, category, familiarity, timeAvailable },
+  recommended: [title, ...],
+  bestMatch: title,
+  actions: { [title]: "added" | "rejected" }
+}
+```
+
+## License
+
+MIT — do whatever you'd like with it.
