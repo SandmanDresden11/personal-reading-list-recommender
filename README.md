@@ -50,4 +50,4 @@ reading-history information entered by the user.
 
 ## Published Artifact
 
-(https://claude.ai/public/artifacts/29dd8150-abf0-4b99-ac42-752a027b7001)
+[(https://claude.ai/public/artifacts/29dd8150-abf0-4b99-ac42-752a027b7001)](https://claude.ai/public/artifacts/482f38a3-0113-4858-b028-d6f42d9d3a52)
