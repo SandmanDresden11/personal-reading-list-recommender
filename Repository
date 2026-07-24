@@ -1,0 +1,15 @@
+personal-reading-list-recommender/
+├── README.md
+├── src/
+│   └── artifact-source-code
+├── prompts/
+│   ├── initial-build-prompt.md
+│   └── revision-prompt.md
+├── testing/
+│   └── test-results.md
+├── screenshots/
+│   ├── reading-list.png
+│   ├── recommendation.png
+│   ├── history.png
+│   └── revised-recommendation.png
+└── LICENSE
